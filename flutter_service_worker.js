@@ -3,12 +3,13 @@ const MANIFEST = 'flutter-app-manifest';
 const TEMP = 'flutter-temp-cache';
 const CACHE_NAME = 'flutter-app-cache';
 
-const RESOURCES = {"assets/AssetManifest.json": "79b5f4109719371665c144150ea65666",
-"assets/AssetManifest.bin": "1edd267a1e71ebb76e15061847f94598",
+const RESOURCES = {"assets/AssetManifest.json": "5284c7f53187b8a19ebff1a695690c58",
+"assets/AssetManifest.bin": "8da02beef2d863922f292dc872112718",
 "assets/assets/images/logo.png": "3ae6a8cd88ca42d48dd774ea8de12069",
+"assets/assets/images/onboarding.png": "f42b8b0a5db11bc9e7d47d0444bd5325",
 "assets/FontManifest.json": "5a32d4310a6f5d9a6b651e75ba0d7372",
 "assets/fonts/MaterialIcons-Regular.otf": "326d7297d5501cec06f8f7eb2301b338",
-"assets/AssetManifest.bin.json": "fc2eda65f56c9604d7593801da40da38",
+"assets/AssetManifest.bin.json": "e262f0431fd86caf42a194ea48a04595",
 "assets/shaders/ink_sparkle.frag": "ecc85a2e95f5e9f53123dcaf8cb9b6ce",
 "assets/NOTICES": "970804ed8f5cb2b0ae272f68576ceeb5",
 "assets/packages/font_awesome_flutter/lib/fonts/fa-brands-400.ttf": "b6487389f90d347276eafbd2fe79dd6c",
@@ -32,13 +33,13 @@ const RESOURCES = {"assets/AssetManifest.json": "79b5f4109719371665c144150ea6566
 "canvaskit/skwasm_st.js.symbols": "c7e7aac7cd8b612defd62b43e3050bdd",
 "index.html": "43d86690fa7c0abd8aaa462de58ea290",
 "/": "43d86690fa7c0abd8aaa462de58ea290",
-"flutter_bootstrap.js": "0ffd9f1ae2b840c33ce531e51da903f4",
+"flutter_bootstrap.js": "22908634da5200baeb8e7b0511dd0231",
 "icons/Icon-192.png": "ac9a721a12bbc803b44f645561ecb1e1",
 "icons/Icon-maskable-192.png": "c457ef57daa1d16f64b27b786ec2ea3c",
 "icons/Icon-maskable-512.png": "301a7604d45b3e739efc881eb04896ea",
 "icons/Icon-512.png": "96e752610906ba2a93c65f8abe1645f1",
 "favicon.png": "5dcef449791fa27946b3d35ad8803796",
-"main.dart.js": "46761e5746766873c8820540144ead2a"};
+"main.dart.js": "9bfb452c71c60f5f3976b28eb87dc8f8"};
 // The application shell files that are downloaded before a service worker can
 // start.
 const CORE = ["main.dart.js",
