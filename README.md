@@ -13,18 +13,12 @@ Dwaya est une application mobile basée sur Flutter qui aide les utilisateurs à
 - **Favoris**: Enregistrez vos pharmacies préférées pour un accès rapide
 - **Itinéraires**: Obtenez des directions vers les pharmacies grâce à l'intégration de cartes
 - **Profils Utilisateurs**: Créez et gérez votre profil utilisateur
-- **Support Hors Ligne**: Accédez aux fonctionnalités de base même sans connexion internet
-- **Support Multilingue**: Disponible en plusieurs langues (Anglais, Arabe)
 
 ## Technologies Utilisées
 
 - **Flutter**: Kit d'outils UI multiplateforme
 - **Firebase**: Authentification, Cloud Firestore et Analytics
-- **Provider**: Gestion d'état
 - **API Google Maps**: Services de localisation et intégration de cartes
-- **Connectivity Plus**: Surveillance de la connectivité réseau
-- **Cached Network Image**: Chargement et mise en cache efficaces des images
-- **Flutter Secure Storage**: Stockage sécurisé des données
 
 ## Démarrage
 
