@@ -325,21 +325,21 @@ class _LoginScreenState extends State<LoginScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                     ),
                     icon: isSigningIn
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                Colors.redAccent,
+                            ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.redAccent,
+                                ),
                               ),
+                            )
+                            : const FaIcon(
+                              FontAwesomeIcons.google,
+                              color: Colors.redAccent,
+                              size: 20,
                             ),
-                          )
-                        : const FaIcon(
-                            FontAwesomeIcons.google,
-                            color: Colors.redAccent,
-                            size: 20,
-                          ),
                     label: Text(
                       isSigningIn ? 'Signing In...' : 'Continue with Google',
                     ),

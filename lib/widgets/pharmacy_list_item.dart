@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dwaya_app/models/pharmacy.dart';
 import 'package:dwaya_app/utils/colors.dart';
-import 'package:dwaya_app/screens/home/pharmacy_detail_screen.dart';
+import 'package:dwaya_app/screens/pharmacy/pharmacy_detail_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:dwaya_app/providers/favorites_provider.dart';
 

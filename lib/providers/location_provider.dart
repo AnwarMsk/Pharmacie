@@ -35,26 +35,26 @@ class LocationProvider with ChangeNotifier {
 
     try {
       // Clear previous errors/states before attempting
-      _currentPosition = await _locationService.getCurrentLocation();
+    _currentPosition = await _locationService.getCurrentLocation();
 
-      if (_currentPosition == null) {
-        // Check status to set flags
-        bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-        if (!serviceEnabled) {
-          _locationServiceInitiallyDisabled = true;
-        } else {
-          LocationPermission permission = await Geolocator.checkPermission();
-          if (permission == LocationPermission.denied ||
-              permission == LocationPermission.deniedForever) {
-            _locationPermissionDenied = true;
-          }
-        }
+    if (_currentPosition == null) {
+      // Check status to set flags
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        _locationServiceInitiallyDisabled = true;
       } else {
-
+        LocationPermission permission = await Geolocator.checkPermission();
+        if (permission == LocationPermission.denied ||
+            permission == LocationPermission.deniedForever) {
+          _locationPermissionDenied = true;
+        }
       }
+    } else {
 
-      _isLoadingLocation = false;
-      notifyListeners();
+    }
+
+    _isLoadingLocation = false;
+    notifyListeners();
     } catch (e) {
       _errorMessage = "Failed to get location: $e";
       _isLoadingLocation = false;

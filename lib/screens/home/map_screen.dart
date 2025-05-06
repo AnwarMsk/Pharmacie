@@ -147,7 +147,7 @@ class MapScreenState extends State<MapScreen> {
         position: LatLng(pharmacy.latitude!, pharmacy.longitude!),
         infoWindow: InfoWindow(title: pharmacy.name, snippet: pharmacy.isOpen ? 'Open' : 'Closed'),
         // Optional: Add custom icon based on open status or favorite status?
-        icon: BitmapDescriptor.defaultMarkerWithHue(
+      icon: BitmapDescriptor.defaultMarkerWithHue(
           pharmacy.isOpen ? BitmapDescriptor.hueGreen : BitmapDescriptor.hueRed,
         ),
         onTap: () {
@@ -217,24 +217,24 @@ class MapScreenState extends State<MapScreen> {
               children: [
                 // Search Bar Container
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  decoration: BoxDecoration(
-                    color: white,
-                    borderRadius: BorderRadius.circular(30.0),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.black12,
-                        spreadRadius: 1,
-                        blurRadius: 5,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              decoration: BoxDecoration(
+                color: white,
+                borderRadius: BorderRadius.circular(30.0),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black12,
+                    spreadRadius: 1,
+                    blurRadius: 5,
+                    offset: Offset(0, 2),
                   ),
-                  child: TextField(
+                ],
+              ),
+              child: TextField(
                     controller: _searchController,
                     decoration: InputDecoration(
                       hintText: 'Search pharmacies by name...',
-                      border: InputBorder.none,
+                  border: InputBorder.none,
                       icon: const Icon(Icons.search, color: darkGrey),
                       // Add clear button if query is not empty
                       suffixIcon: _searchQuery.isNotEmpty
@@ -288,7 +288,7 @@ class MapScreenState extends State<MapScreen> {
                               textAlign: TextAlign.center,
                               style: TextStyle(color: Colors.grey),
                             ),
-                          ),
+              ),
                   ),
               ],
             ),

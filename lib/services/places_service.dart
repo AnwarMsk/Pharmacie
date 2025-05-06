@@ -59,21 +59,41 @@ class PlacesService {
           // Map proxy results to Pharmacy objects
           // TODO: Verify and adjust this mapping based on the proxy response format
           return results.map((place) {
-            // Assuming proxy returns data similar to Google Places format
-            final lat = place['latitude'] as double? ?? 0.0;
-            final lng = place['longitude'] as double? ?? 0.0;
-            final isOpenNow =
-                place['isOpen'] as bool?; // Adjust field name if needed
-            final imageUrlFromProxy = place['imageUrl'] as String? ?? ''; // Ensure this key matches your proxy output
+            // Ensure 'place' is treated as a Map
+            final placeData = place as Map<String, dynamic>; 
+
+            // Basic fields (handle potential nulls)
+            final lat = placeData['latitude'] as double?;
+            final lng = placeData['longitude'] as double?;
+            final isOpenNow = placeData['isOpen'] as bool? ?? false;
+            final imageUrlFromProxy = placeData['imageUrl'] as String? ?? '';
+
+            // New fields from worker (handle potential nulls)
+            final rating = placeData['rating'] as double?;
+            final userRatingsTotal = placeData['userRatingsTotal'] as int?;
+            final phoneNumber = placeData['phoneNumber'] as String?;
+            final website = placeData['website'] as String?;
+            // openingHours parsing might need adjustment based on how worker sends it
+            // Assuming it's sent as a List<String>? or null
+            final openingHoursRaw = placeData['openingHours'];
+            final List<String>? openingHours = openingHoursRaw is List 
+                ? openingHoursRaw.map((e) => e.toString()).toList()
+                : null; 
 
             return Pharmacy(
-              id: place['id'] as String? ?? '', // Adjust field name if needed
-              name: place['name'] as String? ?? 'Unknown Pharmacy',
-              address: place['address'] as String? ?? 'Address not available',
+              id: placeData['id'] as String? ?? '',
+              name: placeData['name'] as String? ?? 'Unknown Pharmacy',
+              address: placeData['address'] as String? ?? 'Address not available',
               latitude: lat,
               longitude: lng,
-              isOpen: isOpenNow ?? false,
+              isOpen: isOpenNow, // Already defaulted above
               imageUrl: imageUrlFromProxy,
+              // Assign new fields
+              rating: rating,
+              userRatingsTotal: userRatingsTotal,
+              phoneNumber: phoneNumber,
+              website: website,
+              openingHours: openingHours,
             );
           }).toList();
         } else {

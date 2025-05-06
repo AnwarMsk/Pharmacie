@@ -7,12 +7,10 @@ import 'package:dwaya_app/providers/favorites_provider.dart'; // Import Favorite
 import 'package:firebase_core/firebase_core.dart'; // Import Firebase Core
 import 'firebase_options.dart'; // Import generated options
 import 'package:dwaya_app/widgets/auth_wrapper.dart'; // Import the AuthWrapper
-import 'package:flutter_dotenv/flutter_dotenv.dart'; // Import dotenv
 
 Future<void> main() async {
   // Make main asynchronous
   WidgetsFlutterBinding.ensureInitialized(); // Ensure Flutter bindings are initialized
-  await dotenv.load(fileName: "env.txt"); // Load env.txt file
   await Firebase.initializeApp(
     // Initialize Firebase
     options: DefaultFirebaseOptions.currentPlatform,

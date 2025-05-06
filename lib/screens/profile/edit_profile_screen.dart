@@ -55,11 +55,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     try {
       await user.updateDisplayName(newName);
       // print('Display name updated successfully');
-      // Optionally update provider state if necessary, but popping might be enough
-      // authProvider.notifyListeners(); // If direct update needed
       if (mounted) {
-        // Notify listeners *after* successful update and *before* popping
-        context.read<AuthProvider>().notifyListeners();
+        // Call reloadUser on the provider instead of notifyListeners directly
+        await authProvider.reloadUser(); 
         Navigator.of(context).pop(); // Go back to profile screen
       }
     } catch (e) {

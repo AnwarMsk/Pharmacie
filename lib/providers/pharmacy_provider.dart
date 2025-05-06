@@ -36,8 +36,7 @@ class PharmacyProvider with ChangeNotifier {
               pharmacy.latitude!,
               pharmacy.longitude!,
             );
-            // Create a new Pharmacy instance with the distance
-            // (Models are often immutable, so we create a new one)
+            // Create a new Pharmacy instance with the distance and other details
             fetchedPharmacies[i] = Pharmacy(
               id: pharmacy.id,
               name: pharmacy.name,
@@ -47,6 +46,30 @@ class PharmacyProvider with ChangeNotifier {
               latitude: pharmacy.latitude,
               longitude: pharmacy.longitude,
               distance: distanceInMeters, // Set the calculated distance
+              // Pass through the other fields fetched by PlacesService
+              rating: pharmacy.rating,
+              userRatingsTotal: pharmacy.userRatingsTotal,
+              phoneNumber: pharmacy.phoneNumber,
+              website: pharmacy.website,
+              openingHours: pharmacy.openingHours,
+            );
+          } else {
+            // If lat/lng is missing, keep the original pharmacy object (no distance)
+             // We still need to ensure the other optional fields are preserved
+             fetchedPharmacies[i] = Pharmacy(
+                id: pharmacy.id,
+                name: pharmacy.name,
+                address: pharmacy.address,
+                isOpen: pharmacy.isOpen,
+                imageUrl: pharmacy.imageUrl,
+                latitude: pharmacy.latitude,
+                longitude: pharmacy.longitude,
+                distance: null, // No distance
+                rating: pharmacy.rating,
+                userRatingsTotal: pharmacy.userRatingsTotal,
+                phoneNumber: pharmacy.phoneNumber,
+                website: pharmacy.website,
+                openingHours: pharmacy.openingHours,
             );
           }
         }

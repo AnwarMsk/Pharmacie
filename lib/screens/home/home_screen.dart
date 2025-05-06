@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart'; // Import Provider
 import 'package:dwaya_app/providers/location_provider.dart'; // Import LocationProvider
-import 'package:dwaya_app/widgets/app_drawer.dart';
 import 'package:dwaya_app/utils/colors.dart';
 import 'package:dwaya_app/models/pharmacy.dart';
 import 'package:dwaya_app/widgets/pharmacy_list_item.dart';
-// import 'package:dwaya_app/screens/home/search_results_screen.dart'; // Removed unused import
 import 'package:dwaya_app/screens/home/map_screen.dart';
 import 'package:dwaya_app/screens/profile/profile_screen.dart'; // Import ProfileScreen
 import 'package:dwaya_app/providers/pharmacy_provider.dart'; // Import PharmacyProvider
@@ -206,7 +204,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: const AppDrawer(),
       appBar: AppBar(
         backgroundColor: white,
         elevation: 1,

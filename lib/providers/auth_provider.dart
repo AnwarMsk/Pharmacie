@@ -161,6 +161,23 @@ class AuthProvider with ChangeNotifier {
     return success;
   }
 
+  // Add method to reload user data and notify
+  Future<void> reloadUser() async {
+    if (_currentUser != null) {
+      try {
+        await _currentUser!.reload();
+        // Re-assign _currentUser from the instance to get updated data
+        _currentUser = _auth.currentUser; 
+        notifyListeners();
+      } catch (e) {
+        // print("AuthProvider: Error reloading user: $e");
+        // Handle reload error if needed, maybe set an error message
+         _errorMessage = "Failed to refresh user data: $e";
+         notifyListeners(); // Notify about the error
+      }
+    }
+  }
+
   // Helper method to map Firebase Auth error codes to user-friendly messages
   String _mapAuthCodeToMessage(String code) {
     switch (code) {
