@@ -3,6 +3,7 @@ import 'package:dwaya_app/models/pharmacy.dart'; // Adjust if model changes
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 // import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:dwaya_app/models/directions_result.dart';
 
 // REMOVED: const String _apiKey = "...";
 
@@ -119,6 +120,77 @@ class PlacesService {
       // print('Error fetching pharmacies via proxy: $e'); // Comment
       // Consider more specific error handling (e.g., network errors)
       throw Exception('Failed to fetch pharmacies via proxy: $e');
+    }
+  }
+
+  // Fetches directions between two points via the backend proxy.
+  Future<DirectionsResult?> getDirections(
+    LatLng origin,
+    LatLng destination,
+  ) async {
+    // Use the same base URL but add the /directions path
+    const String proxyBaseUrl = String.fromEnvironment(
+      'PROXY_BASE_URL',
+      defaultValue:
+          'https://workers-playground-round-sea-78ec.hduvehjdvuzv.workers.dev',
+    );
+    final url = Uri.parse('$proxyBaseUrl/directions'); // Append /directions
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'originLat': origin.latitude,
+          'originLng': origin.longitude,
+          'destinationLat': destination.latitude,
+          'destinationLng': destination.longitude,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final responseBody = utf8.decode(response.bodyBytes);
+        final data = json.decode(responseBody);
+
+        // Check for expected data from the worker
+        if (data['polyline_encoded'] != null && data['bounds'] != null) {
+          final boundsData = data['bounds'];
+          final northeast = boundsData['northeast'];
+          final southwest = boundsData['southwest'];
+
+          // Basic validation of bounds data
+          if (northeast != null && southwest != null && 
+              northeast['lat'] != null && northeast['lng'] != null && 
+              southwest['lat'] != null && southwest['lng'] != null) {
+            
+            final bounds = LatLngBounds(
+              southwest: LatLng(southwest['lat'], southwest['lng']),
+              northeast: LatLng(northeast['lat'], northeast['lng']),
+            );
+
+            return DirectionsResult(
+              encodedPolyline: data['polyline_encoded'],
+              bounds: bounds,
+            );
+          } else {
+            throw Exception('Invalid bounds data received from directions proxy');
+          }
+        } else if (data['error'] != null) {
+           throw Exception('Directions Proxy Error: ${data['error']}');
+        } else {
+           throw Exception('Invalid response format from directions proxy');
+        }
+      } else {
+        throw Exception(
+          'Failed to get directions from proxy: ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      // print('Error fetching directions via proxy: $e'); 
+      // Return null or rethrow a more specific exception
+      // Depending on how the calling code should handle errors
+      // For now, let's rethrow to make errors visible
+      throw Exception('Failed to get directions: $e'); 
     }
   }
 

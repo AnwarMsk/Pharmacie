@@ -6,6 +6,13 @@ import 'package:provider/provider.dart';
 import 'package:dwaya_app/providers/favorites_provider.dart';
 import 'package:dwaya_app/providers/auth_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+// Import AppNavigationProvider and LatLng
+import 'package:dwaya_app/providers/app_navigation_provider.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+// Import LocationProvider
+import 'package:dwaya_app/providers/location_provider.dart';
+// Import DirectionsProvider
+import 'package:dwaya_app/providers/directions_provider.dart';
 // TODO: Import url_launcher if needed for call/website buttons
 
 class PharmacyDetailScreen extends StatefulWidget {
@@ -200,33 +207,38 @@ class _PharmacyDetailScreenState extends State<PharmacyDetailScreen> {
   // Implement Action Buttons
   Widget _buildActionButtons(BuildContext context) {
     final pharmacy = widget.pharmacy;
-    // Disable buttons if data is missing
+    final locationProvider = context.read<LocationProvider>();
+    // final userLocation = locationProvider.currentPosition; // No longer needed here for canRequestDirections
+
     final bool canCall = pharmacy.phoneNumber != null && pharmacy.phoneNumber!.isNotEmpty;
     final bool canViewWebsite = pharmacy.website != null && pharmacy.website!.isNotEmpty;
-    // Assume map is always possible if we have lat/lng (which we should if displayed)
     final bool canShowMap = pharmacy.latitude != null && pharmacy.longitude != null;
+    // final bool canRequestDirections = canShowMap; // No longer needed
 
-    // Replace Row with Wrap
     return Wrap(
-      spacing: 8.0, // Horizontal space between buttons
-      runSpacing: 8.0, // Vertical space between lines if buttons wrap
-      alignment: WrapAlignment.spaceEvenly, // Distribute space like the Row did
+      spacing: 8.0, 
+      runSpacing: 8.0, 
+      alignment: WrapAlignment.spaceAround, 
       children: [
-        // Show on Map Button
         ElevatedButton.icon(
-          onPressed: canShowMap ? () => _launchMap(context, pharmacy.latitude!, pharmacy.longitude!, pharmacy.name) : null,
+          onPressed: canShowMap
+              ? () {
+                  final lat = pharmacy.latitude!;
+                  final lon = pharmacy.longitude!;
+                  context.read<AppNavigationProvider>().focusMapOnLocation(LatLng(lat, lon), pharmacy: pharmacy);
+                  Navigator.pop(context); 
+                }
+              : null,
           icon: const Icon(Icons.map_outlined),
           label: const Text('Map'),
           style: ElevatedButton.styleFrom(backgroundColor: primaryGreen, foregroundColor: white),
         ),
-        // Call Button
         ElevatedButton.icon(
           onPressed: canCall ? () => _launchUrl('tel:${pharmacy.phoneNumber!}') : null,
           icon: const Icon(Icons.call_outlined),
           label: const Text('Call'),
           style: ElevatedButton.styleFrom(backgroundColor: primaryGreen, foregroundColor: white),
         ),
-        // Website Button
         ElevatedButton.icon(
           onPressed: canViewWebsite ? () => _launchUrl(pharmacy.website!) : null,
           icon: const Icon(Icons.web_outlined),
@@ -255,29 +267,6 @@ class _PharmacyDetailScreenState extends State<PharmacyDetailScreen> {
     }
   }
 
-   // Helper function to launch maps
-  Future<void> _launchMap(BuildContext context, double lat, double lon, String label) async {
-    final String googleMapsUrl = 'https://www.google.com/maps/search/?api=1&query=$lat,$lon&query_place_id=${widget.pharmacy.id}'; // Use place ID if available
-    final String appleMapsUrl = 'https://maps.apple.com/?q=$label&ll=$lat,$lon';
-
-    final Uri googleUri = Uri.parse(googleMapsUrl);
-    final Uri appleUri = Uri.parse(appleMapsUrl);
-
-    // Try launching Google Maps first
-    if (await canLaunchUrl(googleUri)) {
-      await launchUrl(googleUri);
-    } else if (await canLaunchUrl(appleUri)) { // Then try Apple Maps
-      await launchUrl(appleUri);
-    } else {
-       // Show error SnackBar if neither works
-       if (mounted) { // Check if the widget is still in the tree
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Could not open map application.'),
-              backgroundColor: Colors.redAccent,
-            ),
-          );
-       }
-    }
-  }
+  // REMOVE _launchDirections helper function
+  // Future<void> _launchDirections(...) async { ... }
 } 

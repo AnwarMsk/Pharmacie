@@ -10,6 +10,7 @@ import 'package:dwaya_app/providers/pharmacy_provider.dart'; // Import PharmacyP
 import 'package:dwaya_app/providers/favorites_provider.dart'; // Import FavoritesProvider
 import 'package:google_maps_flutter/google_maps_flutter.dart'; // Import LatLng
 import 'dart:async'; // Import Timer
+import 'package:dwaya_app/providers/app_navigation_provider.dart'; // Import AppNavigationProvider
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,7 +20,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0;
   bool _isSearching = false;
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = ''; // Add state for the search query
@@ -52,9 +52,8 @@ class _HomeScreenState extends State<HomeScreen> {
         _searchController.clear();
       });
     }
-    setState(() {
-      _selectedIndex = index;
-    });
+    // Use provider to change tab
+    context.read<AppNavigationProvider>().navigateToTab(index);
   }
 
   void _toggleSearch() {
@@ -108,8 +107,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildBody(BuildContext context) {
     // Watch LocationProvider for changes
     final locationProvider = context.watch<LocationProvider>();
+    // Watch AppNavigationProvider for tab index
+    final navProvider = context.watch<AppNavigationProvider>();
+    final selectedIndex = navProvider.currentTabIndex;
 
-    switch (_selectedIndex) {
+    switch (selectedIndex) {
       case 0: // Home
         return HomePageContent(
           searchQuery: _searchQuery,
@@ -122,35 +124,10 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       case 1: // Map/Search
         return MapScreen(); // MapScreen will get location from provider
-      case 2: // Favorites (Previously Analytics)
-        // return const Center(
-        //   child: Column(
-        //     mainAxisAlignment: MainAxisAlignment.center,
-        //     children: [
-        //       Icon(Icons.analytics_outlined, size: 50, color: Colors.grey),
-        //       SizedBox(height: 10),
-        //       Text('Analytics Feature Coming Soon', style: TextStyle(color: Colors.grey)),
-        //     ],
-        //   ),
-        // );
-        // Updated placeholder for Favorites
-        // return const Center(
-        //   child: Column(
-        //     mainAxisAlignment: MainAxisAlignment.center,
-        //     children: [
-        //       Icon(Icons.favorite_border, size: 50, color: Colors.grey),
-        //       SizedBox(height: 10),
-        //       Text('Your Favorite Pharmacies', style: TextStyle(color: Colors.grey)),
-        //       // TODO: Implement actual Favorites list display
-        //     ],
-        //   ),
-        // );
-        // Actual Favorites List Implementation
+      case 2: // Favorites
         return Consumer2<PharmacyProvider, FavoritesProvider>(
           builder: (context, pharmacyProvider, favoritesProvider, child) {
-            // Get favorite IDs
             final favoriteIds = favoritesProvider.favoritePharmacyIds;
-            // Filter currently loaded pharmacies
             final favoritePharmacies = pharmacyProvider.pharmacies
                 .where((p) => favoriteIds.contains(p.id))
                 .toList();
@@ -164,8 +141,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               );
             }
-
-            // Display the list
             return ListView.builder(
               itemCount: favoritePharmacies.length,
               itemBuilder: (context, index) {
@@ -174,20 +149,8 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           },
         );
-      case 3: // History
-        // return const Center(child: Text('History Page'));
-        return const Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.history_outlined, size: 50, color: Colors.grey),
-              SizedBox(height: 10),
-              Text('Order History Feature Coming Soon', style: TextStyle(color: Colors.grey)),
-            ],
-          ),
-        );
-      case 4: // Profile
-        return const ProfileScreen(); // Use the new ProfileScreen
+      case 3: // Profile (was case 4)
+        return const ProfileScreen(); 
       default:
         return HomePageContent(
           searchQuery: _searchQuery,
@@ -203,6 +166,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final navProvider = context.watch<AppNavigationProvider>();
+    final selectedIndex = navProvider.currentTabIndex;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: white,
@@ -224,29 +190,34 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: const EdgeInsets.only(left: 8.0),
                   child: Image.asset('assets/images/logo.png', height: 28),
                 ),
-        // Dynamically set actions based on search state AND selected tab
         actions:
             _isSearching
                 ? [
-                  // Close search button (Always show when searching)
                   IconButton(
                     icon: const Icon(Icons.close, color: black),
                     onPressed: _toggleSearch,
                   ),
                 ]
                 : (
-                  // Only show search icon if NOT on the Map tab (index 1)
-                  _selectedIndex != 1
+                  selectedIndex != 1 
                       ? [
                           IconButton(
                             icon: const Icon(Icons.search, color: black),
                             onPressed: _toggleSearch,
                           ),
                         ]
-                      : [] // Show no actions on Map tab when not searching
+                      : [ // Show filter button only on Map tab (index 1) and when not searching
+                          // This is an example, you might want to place it elsewhere or handle filters differently on map
+                          // IconButton(
+                          //   icon: const Icon(Icons.filter_list, color: black),
+                          //   onPressed: () {
+                          //     // TODO: Implement filter action for map if different from home
+                          //   },
+                          // ),
+                        ]
                 ),
       ),
-      body: _buildBody(context), // Use the helper method to build body
+      body: _buildBody(context),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -255,19 +226,14 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.search_outlined),
-            activeIcon: Icon(Icons.search),
-            label: 'Search',
+            icon: Icon(Icons.map_outlined),
+            activeIcon: Icon(Icons.map),
+            label: 'Map',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.favorite_outline),
+            icon: Icon(Icons.favorite_border), // Corrected from favorite_outline if it was changed
             activeIcon: Icon(Icons.favorite),
             label: 'Favorites',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.history_outlined),
-            activeIcon: Icon(Icons.history),
-            label: 'History',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person_outline),
@@ -275,11 +241,11 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Profile',
           ),
         ],
-        currentIndex: _selectedIndex,
+        currentIndex: selectedIndex,
         selectedItemColor: primaryGreen,
-        unselectedItemColor: darkGrey,
-        onTap: _onItemTapped,
+        unselectedItemColor: Colors.grey, // Ensured this is Colors.grey
         showUnselectedLabels: true,
+        onTap: _onItemTapped,
         type: BottomNavigationBarType.fixed,
       ),
     );

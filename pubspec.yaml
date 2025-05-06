@@ -52,7 +52,8 @@ dependencies:
   url_launcher: ^6.3.1 # Added url_launcher
   shared_preferences: ^2.2.3 # For storing favorites locally
   cloud_firestore: ^5.1.0 # For storing favorites in Firestore
-  cached_network_image: ^3.3.1 # Add this line
+  cached_network_image: ^3.3.1
+  flutter_polyline_points: ^2.0.0 # Add this for decoding polylines
 
 dev_dependencies:
   flutter_test:

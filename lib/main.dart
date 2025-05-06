@@ -12,6 +12,8 @@ import 'package:flutter/foundation.dart'; // Import for kIsWeb
 // Conditionally import the platform-specific initializer
 // We need separate files again to avoid importing dart:html on mobile
 import 'initializers/mobile_initializer.dart' if (dart.library.html) 'initializers/web_initializer.dart' as initializer;
+import 'package:dwaya_app/providers/app_navigation_provider.dart'; // Import AppNavigationProvider
+import 'package:dwaya_app/providers/directions_provider.dart'; // Import DirectionsProvider
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized(); 
@@ -33,6 +35,8 @@ Future<void> main() async {
           create: (_) => PharmacyProvider(),
         ), // Add PharmacyProvider
         ChangeNotifierProvider(create: (_) => FavoritesProvider()), // Add FavoritesProvider
+        ChangeNotifierProvider(create: (_) => AppNavigationProvider()), // Add AppNavigationProvider
+        ChangeNotifierProvider(create: (_) => DirectionsProvider()), // Add DirectionsProvider
         // Add other providers here if needed
       ],
       child: const MyApp(), // Your original root widget

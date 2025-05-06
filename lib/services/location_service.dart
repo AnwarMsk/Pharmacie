@@ -53,4 +53,24 @@ class LocationService {
       return null;
     }
   }
+
+  /// Returns a stream of position updates.
+  Stream<Position> getPositionStream() {
+    const LocationSettings locationSettings = LocationSettings(
+      accuracy: LocationAccuracy.high,
+      distanceFilter: 10, // Update every 10 meters
+    );
+    // Special settings for web to ensure it continues to poll
+    // const LocationSettings webLocationSettings = LocationSettings(
+    //   accuracy: LocationAccuracy.high,
+    //   distanceFilter: 100, // Or appropriate value
+    //   // timeLimit: Duration(seconds: 10), // Example: force update every 10s on web if no movement
+    // );
+
+    // if (kIsWeb) {
+    //   return Geolocator.getPositionStream(locationSettings: webLocationSettings);
+    // } else {
+    return Geolocator.getPositionStream(locationSettings: locationSettings);
+    // }
+  }
 }
