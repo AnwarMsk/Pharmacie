@@ -6,6 +6,8 @@ import 'package:flutter/services.dart'; // Import for PlatformException
 // Keep GoogleSignIn initialization for the sign-in flow itself
 final GoogleSignIn _googleSignIn = GoogleSignIn(
   scopes: ['email'],
+  // For web, you MUST pass the Web client ID from your Google Cloud Console.
+  clientId: "449259807974-179fkrlkvpmhgedqfj53qb1a5l6dspsj.apps.googleusercontent.com",
   // clientId parameter removed for native Android, relying on google-services.json
 );
 
@@ -80,8 +82,13 @@ class AuthProvider with ChangeNotifier {
         // For other PlatformExceptions, provide a generic message including the code for debugging
         _errorMessage = "Google Sign-In failed. Error: ${e.message ?? e.code}";
       }
-    } catch (error) {
+      print('AuthProvider: PlatformException during Google Sign-In: ${e.code} - ${e.message}'); // Added for more logging
+    } catch (error, stackTrace) { // Added stackTrace
       // Catch-all for other errors (e.g., Firebase related after Google Sign-In part)
+      print('AuthProvider: Caught unexpected error during Google Sign-In:');
+      print('Error object: $error');
+      print('Error runtimeType: ${error.runtimeType}');
+      print('StackTrace: $stackTrace'); // Added stackTrace logging
       _errorMessage = "An unexpected error occurred during Google Sign-In. Please try again.";
     } finally {
       _isSigningIn = false;
