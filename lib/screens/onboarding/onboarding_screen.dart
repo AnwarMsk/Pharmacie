@@ -166,21 +166,34 @@ class OnboardingPageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Define the image widget separately for clarity
+    Widget imageDisplay = ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: Image.asset(
+        'assets/images/onboarding.png', 
+        height: 250,
+        // For web, width will be constrained by ConstrainedBox, so set to null or rely on BoxFit.cover.
+        // For mobile, it takes full width.
+        width: kIsWeb ? null : double.infinity, 
+        fit: BoxFit.cover, 
+      ),
+    );
+
     return Padding(
       padding: const EdgeInsets.all(40.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           // Placeholder for Image
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Image.asset(
-              'assets/images/onboarding.png',
-              height: 250,
-              width: double.infinity,
-              fit: BoxFit.cover,
-            ),
-          ),
+          if (kIsWeb) // Conditional layout for web
+            Center( // Center the constrained image on web
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 500), // Set a max width for web
+                child: imageDisplay,
+              ),
+            )
+          else // Original layout for mobile
+            imageDisplay,
           const SizedBox(height: 40),
           Text(
             title,
