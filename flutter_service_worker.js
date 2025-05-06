@@ -7,10 +7,10 @@ const RESOURCES = {"assets/AssetManifest.json": "79b5f4109719371665c144150ea6566
 "assets/AssetManifest.bin": "1edd267a1e71ebb76e15061847f94598",
 "assets/assets/images/logo.png": "3ae6a8cd88ca42d48dd774ea8de12069",
 "assets/FontManifest.json": "5a32d4310a6f5d9a6b651e75ba0d7372",
-"assets/fonts/MaterialIcons-Regular.otf": "f0ce7da09cc5d68e4b73d71eed9ea8cc",
+"assets/fonts/MaterialIcons-Regular.otf": "326d7297d5501cec06f8f7eb2301b338",
 "assets/AssetManifest.bin.json": "fc2eda65f56c9604d7593801da40da38",
 "assets/shaders/ink_sparkle.frag": "ecc85a2e95f5e9f53123dcaf8cb9b6ce",
-"assets/NOTICES": "4ba123ff847d1e68da9491b0c88f8655",
+"assets/NOTICES": "970804ed8f5cb2b0ae272f68576ceeb5",
 "assets/packages/font_awesome_flutter/lib/fonts/fa-brands-400.ttf": "b6487389f90d347276eafbd2fe79dd6c",
 "assets/packages/font_awesome_flutter/lib/fonts/fa-solid-900.ttf": "a2eb084b706ab40c90610942d98886ec",
 "assets/packages/font_awesome_flutter/lib/fonts/fa-regular-400.ttf": "3ca5dc7621921b901d513cc1ce23788c",
@@ -32,13 +32,13 @@ const RESOURCES = {"assets/AssetManifest.json": "79b5f4109719371665c144150ea6566
 "canvaskit/skwasm_st.js.symbols": "c7e7aac7cd8b612defd62b43e3050bdd",
 "index.html": "43d86690fa7c0abd8aaa462de58ea290",
 "/": "43d86690fa7c0abd8aaa462de58ea290",
-"flutter_bootstrap.js": "56b50666b094146677019113fa1ec7dd",
+"flutter_bootstrap.js": "ab678f15211b8afbda923f5642060d95",
 "icons/Icon-192.png": "ac9a721a12bbc803b44f645561ecb1e1",
 "icons/Icon-maskable-192.png": "c457ef57daa1d16f64b27b786ec2ea3c",
 "icons/Icon-maskable-512.png": "301a7604d45b3e739efc881eb04896ea",
 "icons/Icon-512.png": "96e752610906ba2a93c65f8abe1645f1",
 "favicon.png": "5dcef449791fa27946b3d35ad8803796",
-"main.dart.js": "3e59f41a18e2a910e3ad64e6d4d830b0"};
+"main.dart.js": "46761e5746766873c8820540144ead2a"};
 // The application shell files that are downloaded before a service worker can
 // start.
 const CORE = ["main.dart.js",
