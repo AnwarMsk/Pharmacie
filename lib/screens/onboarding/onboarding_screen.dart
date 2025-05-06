@@ -15,17 +15,9 @@ class OnboardingScreen extends StatefulWidget {
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _pageController = PageController();
-  bool _isLastPage = false;
+  bool _isLastPage = true; // Always true for a single page
   final LocationService _locationService = LocationService();
   bool _isLoading = false; // Add loading state for finish/skip action
-
-  // Method to navigate to the next page
-  void _nextPage() {
-    _pageController.nextPage(
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeIn,
-    );
-  }
 
   // Method to handle final navigation (Skip or Get Started)
   void _finishOnboarding() async {
@@ -90,28 +82,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         children: [
           PageView(
             controller: _pageController,
-            onPageChanged: (index) {
-              setState(() {
-                // Update _isLastPage based on the index (assuming 3 pages: 0, 1, 2)
-                _isLastPage = index == 2;
-              });
-            },
+            physics: const NeverScrollableScrollPhysics(), // Disable scrolling for a single page
             children: const [
               OnboardingPageWidget(
                 imagePlaceholderColor: Colors.blueGrey,
                 title: 'Find pharmacy near you',
-                description:
-                    "It's easy to find pharmacy that is near to your location. With just one tap.",
-              ),
-              OnboardingPageWidget(
-                imagePlaceholderColor: Colors.teal,
-                title: 'Search with our database',
-                description:
-                    "It's easy to find pharmacy that is near to your location. With just one tap.",
-              ),
-              OnboardingPageWidget(
-                imagePlaceholderColor: Colors.indigo,
-                title: 'Get delivery on your door',
                 description:
                     "It's easy to find pharmacy that is near to your location. With just one tap.",
               ),
@@ -121,7 +96,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             alignment: const Alignment(0, 0.75),
             child: SmoothPageIndicator(
               controller: _pageController,
-              count: 3,
+              count: 1, // Updated count to 1
               effect: const WormEffect(
                 dotHeight: 10,
                 dotWidth: 10,
@@ -135,32 +110,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             left: 20,
             right: 20,
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.center, // Center the button
               children: [
-                // Skip Button
-                TextButton(
-                  // Disable skip button if loading
-                  onPressed:
-                      _isLoading || _isLastPage ? null : _finishOnboarding,
-                  child: Text(
-                    'Skip',
-                    style: TextStyle(
-                      // Hide skip if last page OR if loading
-                      color:
-                          _isLastPage || _isLoading
-                              ? Colors.transparent
-                              : darkGrey,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
                 // Conditional Button: Next or Get Started
                 ElevatedButton(
-                  // Use appropriate function, disable if loading
-                  onPressed:
-                      _isLoading
-                          ? null
-                          : (_isLastPage ? _finishOnboarding : _nextPage),
+                  // Always call _finishOnboarding, disable if loading
+                  onPressed: _isLoading ? null : _finishOnboarding,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: primaryGreen,
                     foregroundColor: white,
@@ -173,20 +128,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                   ),
                   // Show loading indicator or text
-                  child:
-                      _isLoading && _isLastPage
-                          ? const SizedBox(
-                            height: 18,
-                            width: 18,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(white),
-                            ),
-                          )
-                          : Text(
-                            _isLastPage ? 'Get Started' : 'Next',
-                            style: const TextStyle(fontSize: 16),
+                  child: _isLoading
+                      ? const SizedBox(
+                          height: 18,
+                          width: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(white),
                           ),
+                        )
+                      : const Text( // Always show "Get Started" or similar
+                          'Get Started',
+                          style: TextStyle(fontSize: 16),
+                        ),
                 ),
               ],
             ),
@@ -218,16 +172,13 @@ class OnboardingPageWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           // Placeholder for Image
-          Container(
-            height: 250,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: imagePlaceholderColor, // Use placeholder color
-              borderRadius: BorderRadius.circular(12),
-            ),
-            // TODO: Replace with actual Image widget when assets are available
-            child: const Center(
-              child: Text('Image Placeholder', style: TextStyle(color: white)),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image.asset(
+              'assets/images/onboarding.png',
+              height: 250,
+              width: double.infinity,
+              fit: BoxFit.cover,
             ),
           ),
           const SizedBox(height: 40),
