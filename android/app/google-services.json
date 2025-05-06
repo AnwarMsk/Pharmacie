@@ -12,7 +12,20 @@
           "package_name": "com.example.dwaya_app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "449259807974-o17rvmbijc3dtai1o7u0mcbb6qttddmu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.dwaya_app",
+            "certificate_hash": "96b58d4139708ab5b850ee7431602224ca3462f0"
+          }
+        },
+        {
+          "client_id": "449259807974-179fkrlkvpmhgedqfj53qb1a5l6dspsj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDorhwd2bAyurFKMhcUcIBlAdqGQAUYSdQ"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "449259807974-179fkrlkvpmhgedqfj53qb1a5l6dspsj.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "449259807974-hgqm43cu6ba27ii27idpia6q6too65dp.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.dwayaApp"
+              }
+            }
+          ]
         }
       }
     }
