@@ -83,33 +83,11 @@ lib/
 
 - **Système de Cache**: Utilise SharedPreferences pour le stockage persistant des réponses API
 - **Gestion des Erreurs**: Système complet de rapport d'erreurs
-- **Support Hors Ligne**: ConnectivityHelper pour la surveillance de l'état du réseau
 - **Optimisation d'Images**: CachedNetworkImage pour le chargement efficace des images
-- **Sécurité**: Flutter Secure Storage pour les données sensibles
-- **Validation des Entrées**: Utilitaires de validation robustes
 
-## Sécurité
+## Notre Equipe
 
-L'application implémente plusieurs mesures de sécurité:
-- Stockage sécurisé pour les données sensibles des utilisateurs
-- Validation des entrées pour prévenir les attaques par injection
-- Règles Proguard pour Android pour obfusquer le code
-- Firebase Authentication pour une gestion sécurisée des utilisateurs
-
-## Contribution
-
-1. Forkez le dépôt
-2. Créez votre branche de fonctionnalité (`git checkout -b fonctionnalite/super-feature`)
-3. Validez vos modifications (`git commit -m 'Ajout d'une super fonctionnalité'`)
-4. Poussez vers la branche (`git push origin fonctionnalite/super-feature`)
-5. Ouvrez une Pull Request
-
-## Licence
-
-Ce projet est sous licence MIT - voir le fichier LICENSE pour plus de détails.
-
-## Remerciements
-
-- L'équipe Flutter pour le framework incroyable
-- Firebase pour les services backend
-- Tous les packages open-source utilisés dans ce projet 
+- MESKIOUI Anwar
+- MAMOUNI Outhmane
+- BOUDI Othmane
+- BENALI Nada
