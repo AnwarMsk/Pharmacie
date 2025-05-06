@@ -18,7 +18,7 @@ jobs:
         with:
           channel: 'stable'
 
-      - name: List files in current directory # <-- ADD THIS STEP
+      - name: List files in current directory
         run: ls -la
 
       - name: Install Dependencies 📦
