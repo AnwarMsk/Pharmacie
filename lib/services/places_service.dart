@@ -62,14 +62,22 @@ class PlacesService {
             // Ensure 'place' is treated as a Map
             final placeData = place as Map<String, dynamic>; 
 
+            // Helper function to safely convert num? to double?
+            double? _parseDouble(dynamic value) {
+              if (value is num) {
+                return value.toDouble();
+              }
+              return null;
+            }
+
             // Basic fields (handle potential nulls)
-            final lat = placeData['latitude'] as double?;
-            final lng = placeData['longitude'] as double?;
+            final lat = _parseDouble(placeData['latitude']);
+            final lng = _parseDouble(placeData['longitude']);
             final isOpenNow = placeData['isOpen'] as bool? ?? false;
             final imageUrlFromProxy = placeData['imageUrl'] as String? ?? '';
 
             // New fields from worker (handle potential nulls)
-            final rating = placeData['rating'] as double?;
+            final rating = _parseDouble(placeData['rating']); // Use helper function
             final userRatingsTotal = placeData['userRatingsTotal'] as int?;
             final phoneNumber = placeData['phoneNumber'] as String?;
             final website = placeData['website'] as String?;

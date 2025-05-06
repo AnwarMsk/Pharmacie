@@ -7,9 +7,18 @@ import 'package:dwaya_app/providers/favorites_provider.dart'; // Import Favorite
 import 'package:firebase_core/firebase_core.dart'; // Import Firebase Core
 import 'firebase_options.dart'; // Import generated options
 import 'package:dwaya_app/widgets/auth_wrapper.dart'; // Import the AuthWrapper
+import 'package:flutter/foundation.dart'; // Import for kIsWeb
+
+// Conditionally import the platform-specific initializer
+// We need separate files again to avoid importing dart:html on mobile
+import 'initializers/mobile_initializer.dart' if (dart.library.html) 'initializers/web_initializer.dart' as initializer;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized(); 
+
+  // Call the platform-specific initialization function
+  // This will ensure the script is injected even in release builds for this test.
+  initializer.platformSpecificInitialization();
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
