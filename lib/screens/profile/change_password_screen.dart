@@ -3,14 +3,11 @@ import 'package:dwaya_app/utils/colors.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
-
   @override
   State<ChangePasswordScreen> createState() => _ChangePasswordScreenState();
 }
-
 class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _currentPasswordController =
@@ -22,7 +19,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   bool _isNewPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
   bool _isLoading = false;
-
   @override
   void dispose() {
     _currentPasswordController.dispose();
@@ -30,23 +26,18 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     _confirmPasswordController.dispose();
     super.dispose();
   }
-
   Future<void> _changePassword() async {
-    // Validate form
     if (!_formKey.currentState!.validate()) {
       return;
     }
     if (_isLoading) return;
-
     setState(() {
       _isLoading = true;
     });
-
     final currentPassword = _currentPasswordController.text;
     final newPassword = _newPasswordController.text;
     final authProvider = context.read<AuthProvider>();
     final user = authProvider.currentUser;
-
     if (user == null || user.email == null) {
       _showErrorSnackbar('Error: User not found or email missing.');
       setState(() {
@@ -54,18 +45,13 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       });
       return;
     }
-
     try {
-      // Re-authenticate the user first
       AuthCredential credential = EmailAuthProvider.credential(
         email: user.email!,
         password: currentPassword,
       );
       await user.reauthenticateWithCredential(credential);
-
-      // If re-authentication is successful, update the password
       await user.updatePassword(newPassword);
-
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -97,14 +83,12 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       }
     }
   }
-
   void _showErrorSnackbar(String message) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message), backgroundColor: Colors.redAccent),
     );
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -126,8 +110,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 style: TextStyle(color: darkGrey),
               ),
               const SizedBox(height: 20),
-
-              // Current Password Field
               TextFormField(
                 controller: _currentPasswordController,
                 obscureText: !_isCurrentPasswordVisible,
@@ -155,8 +137,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 },
               ),
               const SizedBox(height: 15),
-
-              // New Password Field
               TextFormField(
                 controller: _newPasswordController,
                 obscureText: !_isNewPasswordVisible,
@@ -181,13 +161,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     return 'Please enter a new password';
                   if (value.length < 6)
                     return 'Password must be at least 6 characters';
-                  // Add more checks if needed
                   return null;
                 },
               ),
               const SizedBox(height: 15),
-
-              // Confirm New Password Field
               TextFormField(
                 controller: _confirmPasswordController,
                 obscureText: !_isConfirmPasswordVisible,
@@ -217,8 +194,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 },
               ),
               const SizedBox(height: 30),
-
-              // Save Button
               ElevatedButton(
                 onPressed: _isLoading ? null : _changePassword,
                 style: ElevatedButton.styleFrom(

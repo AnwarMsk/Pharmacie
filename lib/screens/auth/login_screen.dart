@@ -7,9 +7,9 @@ import 'package:provider/provider.dart';
 import 'package:dwaya_app/providers/auth_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
 
+/// Screen for user authentication with email/password and Google sign-in
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
-
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
@@ -27,16 +27,15 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  /// Handles email/password sign in
   Future<void> _signInWithEmailPassword() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
     final authProvider = context.read<AuthProvider>();
     if (authProvider.isSigningIn) return;
-
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
-
     try {
       final success = await authProvider.signInWithEmailPassword(
         email,
@@ -60,6 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  /// Shows error message in a snackbar
   void _showErrorSnackbar(String message) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -67,7 +67,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  // Add success snackbar helper
+  /// Shows success message in a snackbar
   void _showSuccessSnackbar(String message) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -75,6 +75,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  /// Handles Google sign in
   Future<void> _signInWithGoogle(BuildContext context) async {
     final authProvider = context.read<AuthProvider>();
     bool success = await authProvider.signInWithGoogle();
@@ -91,12 +92,14 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  /// Navigates to sign up screen
   void _navigateToSignUp() {
     Navigator.of(
       context,
     ).push(MaterialPageRoute(builder: (_) => const SignUpScreen()));
   }
 
+  /// Handles password reset flow
   Future<void> _forgotPassword() async {
     final emailController = TextEditingController();
     bool? emailSent = await showDialog<bool>(
@@ -138,9 +141,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ],
       ),
     );
-
     emailController.dispose();
-
     if (emailSent == true) {
       final email = emailController.text.trim();
       try {
@@ -161,6 +162,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  /// Navigates to home screen
   void _navigateToHome() {
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(builder: (_) => const HomeScreen()),
@@ -168,6 +170,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  /// Maps Firebase auth error codes to user-friendly messages
   String _mapAuthCodeToMessage(String code) {
     switch (code) {
       case 'invalid-email':
@@ -183,7 +186,6 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
     final isSigningIn = authProvider.isSigningIn;
-
     return Scaffold(
       backgroundColor: white,
       body: SafeArea(
@@ -213,7 +215,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: TextStyle(fontSize: 16, color: darkGrey),
                   ),
                   const SizedBox(height: 30),
-
                   TextFormField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
@@ -231,7 +232,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     },
                   ),
                   const SizedBox(height: 15),
-
                   TextFormField(
                     controller: _passwordController,
                     obscureText: !_isPasswordVisible,
@@ -267,7 +267,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   const SizedBox(height: 20),
-
                   ElevatedButton(
                     onPressed:
                         authProvider.isSigningIn
@@ -297,7 +296,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                   ),
                   const SizedBox(height: 25),
-
                   const Row(
                     children: [
                       Expanded(child: Divider()),
@@ -309,7 +307,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                   const SizedBox(height: 25),
-
                   ElevatedButton.icon(
                     onPressed:
                         isSigningIn ? null : () => _signInWithGoogle(context),
@@ -345,7 +342,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   const SizedBox(height: 20),
-
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

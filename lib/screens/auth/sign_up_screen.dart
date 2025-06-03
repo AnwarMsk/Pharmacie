@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:dwaya_app/utils/colors.dart';
-import 'package:dwaya_app/screens/home/home_screen.dart'; // For navigation on success
-import 'package:provider/provider.dart'; // To potentially use AuthProvider later
+import 'package:dwaya_app/screens/home/home_screen.dart';
+import 'package:provider/provider.dart';
 import 'package:dwaya_app/providers/auth_provider.dart';
-// Hide the conflicting AuthProvider from firebase_auth
 import 'package:firebase_auth/firebase_auth.dart'
-    hide AuthProvider; // Import FirebaseAuthException
+    hide AuthProvider;
 
+/// Screen for user registration with email and password
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
-
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
 }
@@ -31,61 +30,44 @@ class _SignUpScreenState extends State<SignUpScreen> {
     super.dispose();
   }
 
+  /// Handles email/password sign up
   Future<void> _signUpWithEmailPassword() async {
-    // Check form validity
     if (!_formKey.currentState!.validate()) {
       return;
     }
-    // Prevent multiple clicks if already signing in
     final authProvider = context.read<AuthProvider>();
     if (authProvider.isSigningIn) return;
-
-    // Get email and password
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
-
-    // Use try-catch specifically for FirebaseAuthException
     try {
-      // Call the provider method
       final success = await authProvider.signUpWithEmailPassword(
         email,
         password,
       );
-
       if (success) {
-        // Navigation is handled by the authStateChanges listener
-        // Check if mounted before navigating
         if (mounted) {
-          // Navigate to Home and remove auth screens
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (_) => const HomeScreen()),
-            (Route<dynamic> route) => false, // Remove all previous routes
+            (Route<dynamic> route) => false,
           );
         }
       } else {
-        // This case might not be reached if exceptions are always thrown on failure
         if (mounted)
           _showErrorSnackbar(
-            authProvider.errorMessage ?? 'Sign up failed. Please try again.', // Use provider message
-          ); // Generic message if no exception but still failed
+            authProvider.errorMessage ?? 'Sign up failed. Please try again.',
+          );
       }
     } on FirebaseAuthException catch (e) {
-      // AuthProvider maps the code
-      // print('SignUpScreen: FirebaseAuthException code: ${e.code}');
-      // String errorMessage = ...;
-      // Use mounted check before showing snackbar
-      if (mounted) _showErrorSnackbar(authProvider.errorMessage ?? 'An authentication error occurred.'); // Use provider message
+      if (mounted) _showErrorSnackbar(authProvider.errorMessage ?? 'An authentication error occurred.');
     } catch (e) {
-      // AuthProvider sets generic message
-      // print('SignUpScreen: Generic error: $e');
       if (mounted)
-        _showErrorSnackbar(authProvider.errorMessage ?? 'An unexpected error occurred. Please try again.'); // Use provider message
+        _showErrorSnackbar(authProvider.errorMessage ?? 'An unexpected error occurred. Please try again.');
     }
   }
 
-  // Helper method to show error snackbar
+  /// Shows error message in a snackbar
   void _showErrorSnackbar(String message) {
-    if (!mounted) return; // Extra safety check
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message), backgroundColor: Colors.redAccent),
     );
@@ -93,9 +75,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Watch provider for loading state
     final authProvider = context.watch<AuthProvider>();
-
     return Scaffold(
       backgroundColor: white,
       appBar: AppBar(
@@ -117,15 +97,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // You can add a logo or header text here if desired
                   const Text(
                     'Create your account to get started',
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 18, color: darkGrey),
                   ),
                   const SizedBox(height: 30),
-
-                  // Email Field
                   TextFormField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
@@ -143,8 +120,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     },
                   ),
                   const SizedBox(height: 15),
-
-                  // Password Field
                   TextFormField(
                     controller: _passwordController,
                     obscureText: !_isPasswordVisible,
@@ -169,14 +144,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       if (value == null || value.isEmpty)
                         return 'Please enter your password';
                       if (value.length < 6)
-                        return 'Password must be at least 6 characters'; // Example length check
-                      // Add more password constraints if needed
+                        return 'Password must be at least 6 characters';
                       return null;
                     },
                   ),
                   const SizedBox(height: 15),
-
-                  // Confirm Password Field
                   TextFormField(
                     controller: _confirmPasswordController,
                     obscureText: !_isConfirmPasswordVisible,
@@ -207,10 +179,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     },
                   ),
                   const SizedBox(height: 30),
-
-                  // Sign Up Button
                   ElevatedButton(
-                    // Disable button if signing in
                     onPressed:
                         authProvider.isSigningIn
                             ? null
@@ -221,7 +190,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       minimumSize: const Size(double.infinity, 50),
                       padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
-                    // Show loading indicator or text
                     child:
                         authProvider.isSigningIn
                             ? const SizedBox(
@@ -240,8 +208,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             ),
                   ),
                   const SizedBox(height: 20),
-
-                  // Login Link
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -254,7 +220,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             () =>
                                 Navigator.of(
                                   context,
-                                ).pop(), // Go back to LoginScreen
+                                ).pop(),
                         child: const Text(
                           'Login',
                           style: TextStyle(

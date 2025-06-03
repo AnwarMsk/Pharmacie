@@ -4,12 +4,14 @@ import 'package:dwaya_app/utils/colors.dart';
 import 'package:dwaya_app/screens/pharmacy/pharmacy_detail_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:dwaya_app/providers/favorites_provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
+/// A widget that displays a single pharmacy item in a list with image, details, and favorite button
 class PharmacyListItem extends StatelessWidget {
   final Pharmacy pharmacy;
-
   const PharmacyListItem({super.key, required this.pharmacy});
 
+  /// Formats the distance value into a human-readable string
   String _formatDistance(double? meters) {
     if (meters == null) {
       return 'N/A';
@@ -39,55 +41,36 @@ class PharmacyListItem extends StatelessWidget {
           padding: const EdgeInsets.all(12.0),
           child: Row(
             children: [
-              // Placeholder Image
-              // CircleAvatar(
-              //   radius: 30,
-              //   backgroundColor: lightGrey,
-              //   child: Icon(
-              //     Icons.local_pharmacy_outlined,
-              //     color: darkGrey.withAlpha(150),
-              //     size: 30,
-              //   ),
-              // ),
-              // Display Actual Image or Placeholder
               SizedBox(
                 width: 60,
                 height: 60,
-                child: ClipRRect( // Clip the image to be rounded
+                child: ClipRRect(
                   borderRadius: BorderRadius.circular(8.0),
                   child: pharmacy.imageUrl.isNotEmpty
-                      ? Image.network(
-                          pharmacy.imageUrl,
+                      ? CachedNetworkImage(
+                          imageUrl: pharmacy.imageUrl,
                           fit: BoxFit.cover,
-                          // Loading Builder
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) return child; // Image loaded
-                            return Container(
-                              color: lightGrey,
-                              child: Center(
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  value: loadingProgress.expectedTotalBytes != null
-                                      ? loadingProgress.cumulativeBytesLoaded /
-                                          loadingProgress.expectedTotalBytes!
-                                      : null,
-                                ),
+                          placeholder: (context, url) => Container(
+                            color: lightGrey,
+                            child: const Center(
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
                               ),
-                            );
-                          },
-                          // Error Builder
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              color: lightGrey,
-                              child: Icon(
-                                Icons.image_not_supported,
-                                color: darkGrey.withAlpha(150),
-                                size: 30,
-                              ),
-                            );
-                          },
+                            ),
+                          ),
+                          errorWidget: (context, url, error) => Container(
+                            color: lightGrey,
+                            child: Icon(
+                              Icons.image_not_supported,
+                              color: darkGrey.withAlpha(150),
+                              size: 30,
+                            ),
+                          ),
+                          memCacheWidth: 120,
+                          memCacheHeight: 120,
+                          cacheKey: 'pharmacy_${pharmacy.id}_thumb',
                         )
-                      : Container( // Placeholder if URL is empty
+                      : Container(
                           color: lightGrey,
                           child: Icon(
                             Icons.local_pharmacy_outlined,
@@ -98,17 +81,14 @@ class PharmacyListItem extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 15),
-              // Pharmacy Details
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Row for Name and Favorite Button
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Expanded name to prevent overflow issues
                         Expanded(
                           child: Text(
                             pharmacy.name,
@@ -120,7 +100,6 @@ class PharmacyListItem extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                        // Favorite Button (consume provider)
                         Consumer<FavoritesProvider>(
                           builder: (context, favoritesProvider, child) {
                             final isFav = favoritesProvider.isFavorite(pharmacy.id);
@@ -130,10 +109,9 @@ class PharmacyListItem extends StatelessWidget {
                               constraints: const BoxConstraints(),
                               icon: Icon(
                                 isFav ? Icons.favorite : Icons.favorite_border,
-                                color: isLoggedIn ? (isFav ? Colors.redAccent : Colors.grey) : Colors.grey[300], // Dim if logged out
-                                size: 22, // Adjust size as needed
+                                color: isLoggedIn ? (isFav ? Colors.redAccent : Colors.grey) : Colors.grey[300],
+                                size: 22,
                               ),
-                              // Disable onPressed if not logged in
                               onPressed: isLoggedIn
                                   ? () {
                                     favoritesProvider.toggleFavorite(pharmacy.id);
@@ -152,15 +130,32 @@ class PharmacyListItem extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 4),
-                    Text(
-                      _formatDistance(pharmacy.distance),
-                      style: const TextStyle(fontSize: 13, color: darkGrey),
+                    Row(
+                      children: [
+                        Text(
+                          _formatDistance(pharmacy.distance),
+                          style: const TextStyle(fontSize: 13, color: darkGrey),
+                        ),
+                        if (pharmacy.rating != null) ...[
+                          const SizedBox(width: 8),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.star, color: Colors.amber, size: 14),
+                              const SizedBox(width: 2),
+                              Text(
+                                '${pharmacy.rating!.toStringAsFixed(1)}',
+                                style: const TextStyle(fontSize: 12, color: darkGrey),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ],
                     ),
                   ],
                 ),
               ),
               const SizedBox(width: 10),
-              // Open Status
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(

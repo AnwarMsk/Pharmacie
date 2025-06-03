@@ -54,6 +54,21 @@ dependencies:
   cloud_firestore: ^5.1.0 # For storing favorites in Firestore
   cached_network_image: ^3.3.1
   flutter_polyline_points: ^2.0.0 # Add this for decoding polylines
+  
+  # Add offline support and connectivity monitoring
+  connectivity_plus: ^6.0.1
+  
+  # Add secure storage for sensitive data
+  flutter_secure_storage: ^9.0.0
+  
+  # Add device info for better error reporting
+  device_info_plus: ^9.1.2
+  
+  # Add package info to check app version
+  package_info_plus: ^8.3.0
+  
+  # Add path_provider for file system access
+  path_provider: ^2.1.2
 
 dev_dependencies:
   flutter_test:

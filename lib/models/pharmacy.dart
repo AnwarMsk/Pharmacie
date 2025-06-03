@@ -2,20 +2,17 @@ class Pharmacy {
   final String id;
   final String name;
   final String address;
-  double? distance; // Changed to nullable double for calculated distance
+  final double? distance;
   final bool isOpen;
-  final String imageUrl; // Placeholder for image
+  final String imageUrl;
   final double? latitude;
   final double? longitude;
-
-  // Add missing fields from Places API (nullable)
   final double? rating;
   final int? userRatingsTotal;
   final String? phoneNumber;
   final String? website;
   final List<String>? openingHours;
-
-  Pharmacy({
+  const Pharmacy({
     required this.id,
     required this.name,
     required this.address,
@@ -23,11 +20,42 @@ class Pharmacy {
     required this.imageUrl,
     this.latitude,
     this.longitude,
-    this.distance, // Make distance optional in constructor
+    this.distance,
     this.rating,
     this.userRatingsTotal,
     this.phoneNumber,
     this.website,
     this.openingHours,
   });
+  Pharmacy copyWith({
+    String? id,
+    String? name,
+    String? address,
+    double? distance,
+    bool? isOpen,
+    String? imageUrl,
+    double? latitude,
+    double? longitude,
+    double? rating,
+    int? userRatingsTotal,
+    String? phoneNumber,
+    String? website,
+    List<String>? openingHours,
+  }) {
+    return Pharmacy(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      address: address ?? this.address,
+      distance: distance ?? this.distance,
+      isOpen: isOpen ?? this.isOpen,
+      imageUrl: imageUrl ?? this.imageUrl,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+      rating: rating ?? this.rating,
+      userRatingsTotal: userRatingsTotal ?? this.userRatingsTotal,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      website: website ?? this.website,
+      openingHours: openingHours ?? this.openingHours,
+    );
+  }
 }

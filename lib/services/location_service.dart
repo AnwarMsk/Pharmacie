@@ -1,76 +1,127 @@
 import 'package:permission_handler/permission_handler.dart';
 import 'package:geolocator/geolocator.dart';
-
+import 'package:flutter/foundation.dart';
+import 'dart:async';
 class LocationService {
-  /// Requests location permission (when in use).
-  /// Returns true if permission is granted, false otherwise.
+  static final LocationService _instance = LocationService._internal();
+  factory LocationService() => _instance;
+  LocationService._internal();
+  Position? _lastKnownPosition;
+  DateTime? _lastPositionTimestamp;
+  StreamController<Position>? _positionStreamController;
+  StreamSubscription<Position>? _geolocatorStreamSubscription;
   Future<bool> requestLocationPermission() async {
-    PermissionStatus status = await Permission.locationWhenInUse.request();
-    return status.isGranted;
-  }
-
-  /// Gets the current device location.
-  /// Returns Position if successful and permission granted.
-  /// Throws an exception or returns null if service disabled, permission denied, or error occurs.
-  Future<Position?> getCurrentLocation() async {
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return null;
+    try {
+      PermissionStatus status = await Permission.locationWhenInUse.status;
+      if (status.isGranted) {
+        return true;
+      }
+      status = await Permission.locationWhenInUse.request();
+      return status.isGranted;
+    } catch (e) {
+      debugPrint('Error requesting location permission: $e');
+      return false;
     }
-
-    final status = await Geolocator.checkPermission();
-
-    LocationPermission permission;
-
-    if (status == LocationPermission.denied) {
-      // Permissions are denied, next time you could try
-      // requesting permissions again (this is also where
-      // Android's shouldShowRequestPermissionRationale
-      // returned true. According to Android guidelines
-      // your App should show an explanatory UI now.
-      // We call requestPermission again here just in case the previous `requestLocationPermission`
-      // failed silently, although ideally the check should happen before calling this method.
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return null;
+  }
+  Future<Position?> getCurrentLocation({bool highAccuracy = true, bool useCachedLocation = true}) async {
+    if (useCachedLocation && _lastKnownPosition != null && _lastPositionTimestamp != null) {
+      final now = DateTime.now();
+      final timeSinceLastPosition = now.difference(_lastPositionTimestamp!);
+      if (timeSinceLastPosition.inSeconds < 30) {
+        return _lastKnownPosition;
       }
     }
-
-    if (status == LocationPermission.deniedForever) {
-      // Permissions are denied forever, handle appropriately.
-      // Consider calling openAppSettings() here if needed, after informing user.
-      return null;
-    }
-
-    // When we reach here, permissions are granted and we can
-    // continue accessing the position of the device.
     try {
-      return await Geolocator.getCurrentPosition(
-        // Desired accuracy can be adjusted
-        desiredAccuracy: LocationAccuracy.high,
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        debugPrint('Location services are disabled');
+        return null;
+      }
+      final permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        final requestedPermission = await Geolocator.requestPermission();
+        if (requestedPermission == LocationPermission.denied) {
+          debugPrint('Location permission denied');
+          return null;
+        }
+      }
+      if (permission == LocationPermission.deniedForever) {
+        debugPrint('Location permission permanently denied');
+        return null;
+      }
+      final desiredAccuracy = _determineLocationAccuracy(highAccuracy);
+      final position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: desiredAccuracy,
+        timeLimit: const Duration(seconds: 15),
       );
+      _lastKnownPosition = position;
+      _lastPositionTimestamp = DateTime.now();
+      return position;
+    } on TimeoutException {
+      debugPrint('Location request timed out');
+      return _lastKnownPosition;
     } catch (e) {
+      debugPrint('Error getting current location: $e');
       return null;
     }
   }
-
-  /// Returns a stream of position updates.
-  Stream<Position> getPositionStream() {
-    const LocationSettings locationSettings = LocationSettings(
-      accuracy: LocationAccuracy.high,
-      distanceFilter: 10, // Update every 10 meters
+  Stream<Position> getPositionStream([LocationSettings? settings]) {
+    _disposePositionStream();
+    _positionStreamController = StreamController<Position>.broadcast();
+    final locationSettings = settings ?? _getDefaultLocationSettings();
+    _geolocatorStreamSubscription = Geolocator.getPositionStream(
+      locationSettings: locationSettings,
+    ).listen(
+      (position) {
+        _lastKnownPosition = position;
+        _lastPositionTimestamp = DateTime.now();
+        if (_positionStreamController != null && !_positionStreamController!.isClosed) {
+          _positionStreamController!.add(position);
+        }
+      },
+      onError: (error) {
+        debugPrint('Error in location stream: $error');
+        if (_positionStreamController != null && !_positionStreamController!.isClosed) {
+          _positionStreamController!.addError(error);
+        }
+      },
+      cancelOnError: false,
     );
-    // Special settings for web to ensure it continues to poll
-    // const LocationSettings webLocationSettings = LocationSettings(
-    //   accuracy: LocationAccuracy.high,
-    //   distanceFilter: 100, // Or appropriate value
-    //   // timeLimit: Duration(seconds: 10), // Example: force update every 10s on web if no movement
-    // );
-
-    // if (kIsWeb) {
-    //   return Geolocator.getPositionStream(locationSettings: webLocationSettings);
-    // } else {
-    return Geolocator.getPositionStream(locationSettings: locationSettings);
-    // }
+    return _positionStreamController!.stream;
+  }
+  LocationAccuracy _determineLocationAccuracy(bool highAccuracy) {
+    if (kIsWeb) {
+      return LocationAccuracy.reduced;
+    } else if (!highAccuracy) {
+      return LocationAccuracy.reduced;
+    } else {
+      return LocationAccuracy.high;
+    }
+  }
+  LocationSettings _getDefaultLocationSettings() {
+    if (kIsWeb) {
+      return const LocationSettings(
+        accuracy: LocationAccuracy.reduced,
+        distanceFilter: 100,
+      );
+    }
+    return const LocationSettings(
+      accuracy: LocationAccuracy.high,
+      distanceFilter: 10,
+    );
+  }
+  void _disposePositionStream() {
+    _geolocatorStreamSubscription?.cancel();
+    _geolocatorStreamSubscription = null;
+    _positionStreamController?.close();
+    _positionStreamController = null;
+  }
+  void clearCache() {
+    _lastKnownPosition = null;
+    _lastPositionTimestamp = null;
+  }
+  void dispose() {
+    _disposePositionStream();
+    clearCache();
   }
 }

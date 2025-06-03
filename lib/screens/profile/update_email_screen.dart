@@ -3,53 +3,43 @@ import 'package:dwaya_app/utils/colors.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 class UpdateEmailScreen extends StatefulWidget {
   const UpdateEmailScreen({super.key});
-
   @override
   State<UpdateEmailScreen> createState() => _UpdateEmailScreenState();
 }
-
 class _UpdateEmailScreenState extends State<UpdateEmailScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _newEmailController = TextEditingController();
   final TextEditingController _passwordController =
-      TextEditingController(); // For re-auth
+      TextEditingController();
   bool _isLoading = false;
   bool _requiresPassword = false;
-
   @override
   void initState() {
     super.initState();
-    // Check if the user has a password provider linked
     final user = context.read<AuthProvider>().currentUser;
     _requiresPassword =
         user?.providerData.any((p) => p.providerId == 'password') ?? false;
   }
-
   @override
   void dispose() {
     _newEmailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
-
   Future<void> _updateEmail() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
     if (_isLoading) return;
-
     setState(() {
       _isLoading = true;
     });
-
     final newEmail = _newEmailController.text.trim();
     final password = _passwordController.text;
     final authProvider = context.read<AuthProvider>();
     final user = authProvider.currentUser;
-
     if (user == null || user.email == null) {
       _showErrorSnackbar('Error: User not found or email missing.');
       setState(() {
@@ -57,9 +47,7 @@ class _UpdateEmailScreenState extends State<UpdateEmailScreen> {
       });
       return;
     }
-
     try {
-      // Re-authenticate user first
       if (user.email != null && password.isNotEmpty) {
         AuthCredential credential = EmailAuthProvider.credential(
           email: user.email!,
@@ -67,11 +55,7 @@ class _UpdateEmailScreenState extends State<UpdateEmailScreen> {
         );
         await user.reauthenticateWithCredential(credential);
       }
-
-      // Update email and send verification link
       await user.verifyBeforeUpdateEmail(newEmail);
-
-      // Show success message and pop
       if (mounted) {
         showDialog(
           context: context,
@@ -85,12 +69,12 @@ class _UpdateEmailScreenState extends State<UpdateEmailScreen> {
                   TextButton(
                     child: const Text('OK'),
                     onPressed:
-                        () => Navigator.of(context).pop(), // Close dialog
+                        () => Navigator.of(context).pop(),
                   ),
                 ],
               ),
         ).then((_) {
-          if (mounted) Navigator.of(context).pop(); // Pop UpdateEmailScreen
+          if (mounted) Navigator.of(context).pop();
         });
       }
     } on FirebaseAuthException catch (e) {
@@ -116,14 +100,12 @@ class _UpdateEmailScreenState extends State<UpdateEmailScreen> {
       }
     }
   }
-
   void _showErrorSnackbar(String message) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message), backgroundColor: Colors.redAccent),
     );
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -145,8 +127,6 @@ class _UpdateEmailScreenState extends State<UpdateEmailScreen> {
                 style: const TextStyle(color: darkGrey),
               ),
               const SizedBox(height: 20),
-
-              // New Email Field
               TextFormField(
                 controller: _newEmailController,
                 keyboardType: TextInputType.emailAddress,
@@ -160,7 +140,6 @@ class _UpdateEmailScreenState extends State<UpdateEmailScreen> {
                     return 'Please enter the new email address';
                   if (!RegExp(r"^\S+@\S+\.\S+$").hasMatch(value.trim()))
                     return 'Please enter a valid email address';
-                  // Prevent updating to the same email
                   if (value.trim() ==
                       context.read<AuthProvider>().currentUser?.email) {
                     return 'This is already your current email address.';
@@ -169,8 +148,6 @@ class _UpdateEmailScreenState extends State<UpdateEmailScreen> {
                 },
               ),
               const SizedBox(height: 15),
-
-              // Current Password Field (Conditional)
               if (_requiresPassword)
                 TextFormField(
                   controller: _passwordController,
@@ -188,8 +165,6 @@ class _UpdateEmailScreenState extends State<UpdateEmailScreen> {
                   },
                 ),
               const SizedBox(height: 30),
-
-              // Save Button
               ElevatedButton(
                 onPressed: _isLoading ? null : _updateEmail,
                 style: ElevatedButton.styleFrom(

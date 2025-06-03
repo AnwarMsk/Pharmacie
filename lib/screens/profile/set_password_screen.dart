@@ -3,14 +3,11 @@ import 'package:dwaya_app/utils/colors.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 class SetPasswordScreen extends StatefulWidget {
   const SetPasswordScreen({super.key});
-
   @override
   State<SetPasswordScreen> createState() => _SetPasswordScreenState();
 }
-
 class _SetPasswordScreenState extends State<SetPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _newPasswordController = TextEditingController();
@@ -19,29 +16,23 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
   bool _isNewPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
   bool _isLoading = false;
-
   @override
   void dispose() {
     _newPasswordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
   }
-
   Future<void> _setPassword() async {
-    // Validate form
     if (!_formKey.currentState!.validate()) {
       return;
     }
     if (_isLoading) return;
-
     setState(() {
       _isLoading = true;
     });
-
     final newPassword = _newPasswordController.text;
     final authProvider = context.read<AuthProvider>();
     final user = authProvider.currentUser;
-
     if (user == null || user.email == null) {
       _showErrorSnackbar('Error: User not found or email missing.');
       setState(() {
@@ -49,8 +40,6 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
       });
       return;
     }
-
-    // Check if password provider is already linked (safety check)
     if (user.providerData.any((p) => p.providerId == 'password')) {
       _showErrorSnackbar(
         'Error: Password sign-in already enabled for this account.',
@@ -60,18 +49,12 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
       });
       return;
     }
-
-    // Create credential to link
     AuthCredential credential = EmailAuthProvider.credential(
       email: user.email!,
-      password: newPassword, // Use the new password
+      password: newPassword,
     );
-
     try {
-      // Link the credential to the existing user
       await user.linkWithCredential(credential);
-
-      // Show success message and pop
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -111,14 +94,12 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
       }
     }
   }
-
   void _showErrorSnackbar(String message) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message), backgroundColor: Colors.redAccent),
     );
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -140,8 +121,6 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
                 style: TextStyle(color: darkGrey),
               ),
               const SizedBox(height: 20),
-
-              // New Password Field
               TextFormField(
                 controller: _newPasswordController,
                 obscureText: !_isNewPasswordVisible,
@@ -170,8 +149,6 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
                 },
               ),
               const SizedBox(height: 15),
-
-              // Confirm New Password Field
               TextFormField(
                 controller: _confirmPasswordController,
                 obscureText: !_isConfirmPasswordVisible,
@@ -201,8 +178,6 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
                 },
               ),
               const SizedBox(height: 30),
-
-              // Save Button
               ElevatedButton(
                 onPressed: _isLoading ? null : _setPassword,
                 style: ElevatedButton.styleFrom(

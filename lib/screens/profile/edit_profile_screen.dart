@@ -2,68 +2,53 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:dwaya_app/providers/auth_provider.dart';
 import 'package:dwaya_app/utils/colors.dart';
-
 class EditProfileScreen extends StatefulWidget {
   final String currentDisplayName;
-
   const EditProfileScreen({super.key, required this.currentDisplayName});
-
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();
 }
-
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _nameController;
   bool _isLoading = false;
-
   @override
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.currentDisplayName);
   }
-
   @override
   void dispose() {
     _nameController.dispose();
     super.dispose();
   }
-
   Future<void> _saveDisplayName() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
     if (_isLoading) return;
-
     setState(() {
       _isLoading = true;
     });
-
     final newName = _nameController.text.trim();
     final authProvider = context.read<AuthProvider>();
     final user = authProvider.currentUser;
-
     if (user == null) {
-      // Should not happen, but good practice to check
       _showErrorSnackbar('Error: Not logged in.');
       setState(() {
         _isLoading = false;
       });
       return;
     }
-
     try {
       await user.updateDisplayName(newName);
-      // print('Display name updated successfully');
       if (mounted) {
-        // Call reloadUser on the provider instead of notifyListeners directly
-        await authProvider.reloadUser(); 
-        Navigator.of(context).pop(); // Go back to profile screen
+        await authProvider.reloadUser();
+        Navigator.of(context).pop();
       }
     } catch (e) {
       _showErrorSnackbar('Failed to update display name. Please try again.');
     } finally {
-      // Ensure loading state is reset even if widget is disposed during async gap
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -71,14 +56,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       }
     }
   }
-
   void _showErrorSnackbar(String message) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message), backgroundColor: Colors.redAccent),
     );
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -88,7 +71,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         foregroundColor: black,
         elevation: 1,
         actions: [
-          // Save Button
           TextButton(
             onPressed: _isLoading ? null : _saveDisplayName,
             child:
@@ -124,7 +106,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   return null;
                 },
               ),
-              // Add some spacing
               const SizedBox(height: 20),
             ],
           ),
