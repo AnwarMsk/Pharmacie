@@ -1,3 +1,5 @@
+[The Android App (APK)](https://github.com/AnwarMsk/Pharmacie/blob/main/app-release.apk)
+
 # Dwaya - Pharmacy Finder App
 
 <p align="center">
@@ -13,8 +15,6 @@ Dwaya is a Flutter-based mobile application that helps users find nearby pharmac
 - **Favorites**: Save your favorite pharmacies for quick access
 - **Directions**: Get directions to pharmacies using map integration
 - **User Profiles**: Create and manage your user profile
-- **Offline Support**: Access basic features even without an internet connection
-- **Multilingual Support**: Available in multiple languages (English, Arabic)
 
 ## Technologies Used
 
@@ -102,20 +102,11 @@ The app implements several security measures:
 - Proguard rules for Android to obfuscate code
 - Firebase Authentication for secure user management
 
-## Contributing
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
 
-## License
+## Team members
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgements
-
-- Flutter team for the amazing framework
-- Firebase for backend services
-- All the open-source packages used in this project
+- MESKIOUI Anwar
+- MAMOUNI Outhmane
+- BENALI Nada
+- BOUDI Othman

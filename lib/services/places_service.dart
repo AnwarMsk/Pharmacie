@@ -12,7 +12,7 @@ class PlacesService {
   final Duration _cacheExpiration = const Duration(minutes: 30);
   final String _proxyBaseUrl = const String.fromEnvironment(
     'PROXY_BASE_URL',
-    defaultValue: 'https:
+    defaultValue: 'https://workers-playground-round-sea-78ec.hduvehjdvuzv.workers.dev',
   );
   final http.Client _client = http.Client();
   static final PlacesService _instance = PlacesService._internal();

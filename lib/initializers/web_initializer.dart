@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 void platformSpecificInitialization() {
   const apiKey = String.fromEnvironment('GOOGLE_MAPS_API_KEY');
   if (apiKey.isNotEmpty) {
-    final scriptUrl = 'https:
+    final scriptUrl = 'https://maps.googleapis.com/maps/api/js?key=$apiKey&libraries=places';
     if (html.document.querySelector('script[src="$scriptUrl"]') == null) {
       final script = html.ScriptElement()
         ..id = 'google-maps-sdk'
